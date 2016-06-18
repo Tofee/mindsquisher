@@ -2,5 +2,7 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>MindArea.qml</file>
+        <file>ViewportModel.qml</file>
+        <file>BoundingBox.qml</file>
     </qresource>
 </RCC>
