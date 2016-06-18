@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>MindArea.qml</file>
+        <file>GridEntity.qml</file>
     </qresource>
 </RCC>
