@@ -13,11 +13,21 @@ ApplicationWindow {
             title: qsTr("File")
             MenuItem {
                 text: qsTr("&Open")
-                onTriggered: console.log("Open action triggered");
             }
             MenuItem {
                 text: qsTr("Exit")
                 onTriggered: Qt.quit();
+            }
+        }
+        Menu {
+            title: qsTr("Insert")
+            MenuItem {
+                text: qsTr("&Circle")
+                onTriggered:mindArea.insertShape("circle");
+            }
+            MenuItem {
+                text: qsTr("Rectangle")
+                onTriggered:mindArea.insertShape("rectangle");
             }
         }
     }
@@ -29,6 +39,7 @@ ApplicationWindow {
     }
 
     MindArea {
+        id: mindArea
         anchors.fill: parent
     }
 }
