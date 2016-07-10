@@ -95,6 +95,7 @@ Item {
         acceptedButtons: Qt.NoButton // let the Flickable viewport handle the swipes
         onWheel: {
             flickableViewport.zoomLevel += wheel.angleDelta.y/120;
+            console.log("x : " + wheel.x + "y : " + wheel.y);
         }
     }
 
@@ -111,6 +112,8 @@ Item {
 
         // update bouding box
         modelBoundingBox.insert(item);
+
+        return item;
     }
 
     function insertItemAtPos(item, pos) {

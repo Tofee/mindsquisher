@@ -2,7 +2,9 @@ TEMPLATE = app
 
 QT += qml quick widgets
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    line.cpp \
+    qobjectlistmodel.cpp
 
 RESOURCES += qml.qrc
 
@@ -14,4 +16,8 @@ include(deployment.pri)
 
 DISTFILES += \
     README.md
+
+HEADERS += \
+    line.h \
+    qobjectlistmodel.h
 
