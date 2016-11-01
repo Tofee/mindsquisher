@@ -15,8 +15,8 @@ Item {
         onRowsInserted: {
             if(last>0) {
                 var item = lineComp.createObject(flickableViewport.contentItem,
-                                                  { "p1": Qt.binding(function() { return Qt.point(itemArray.get(0).x, itemArray.get(0).y); }),
-                                                    "p2": Qt.binding(function() { return Qt.point(itemArray.get(last).x, itemArray.get(last).y); }) } );
+                                                  { "p1": Qt.binding(function() { return Qt.point(itemArray.get(0).centerX, itemArray.get(0).centerY); }),
+                                                    "p2": Qt.binding(function() { return Qt.point(itemArray.get(last).centerX, itemArray.get(last).centerY); }) } );
                 flickableViewport.insertItemAtPos(item, Qt.point(0,0));
                 console.log(item + " " + item.thickness + " " + item.color + " " + item.p1 + " " + item.p2);
             }
@@ -26,10 +26,12 @@ Item {
     Component {
         id: lineComp
         Line {
+            z: -1
         }
     }
 
-    function insertShape(component) {
+    function insertShape(componentFile) {
+        var component = Qt.createComponent(componentFile);
         var newItem = flickableViewport.instantiateComponentAt(component, Qt.point(0, 0));
         itemArray.addItem(newItem);
     }

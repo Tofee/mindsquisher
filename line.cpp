@@ -87,7 +87,7 @@ QSGNode *Line::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 
     QSGGeometry::Point2D *vertices = geometry->vertexDataAsPoint2D();
     vertices[0].set(m_p1.x(), m_p1.y());
-    vertices[0].set(m_p2.x(), m_p2.y());
+    vertices[1].set(m_p2.x(), m_p2.y());
 
     node->markDirty(QSGNode::DirtyGeometry);
 

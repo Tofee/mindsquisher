@@ -1,6 +1,5 @@
-import QtQuick 2.5
-import QtQuick.Layouts 1.1
-import QtQuick.Controls 1.4
+import QtQuick 2.6
+import QtQuick.Controls 2.0
 import QtQuick.Dialogs 1.2
 
 import MindSquisher 1.0
@@ -11,26 +10,41 @@ ApplicationWindow {
     height: 600
     title: qsTr("Mind Squisher")
 
-    menuBar: MenuBar {
-        Menu {
-            title: qsTr("File")
-            MenuItem {
-                text: qsTr("&Open")
-            }
-            MenuItem {
-                text: qsTr("Exit")
-                onTriggered: Qt.quit();
+    header: Row {
+        height: 30
+        Button {
+            text: qsTr("File")
+            onClicked: subMenuFile.open();
+            height: parent.height
+            Menu {
+                id: subMenuFile
+                title: qsTr("File")
+                y: parent.height
+                MenuItem {
+                    text: qsTr("&Open")
+                }
+                MenuItem {
+                    text: qsTr("Exit")
+                    onTriggered: Qt.quit();
+                }
             }
         }
-        Menu {
-            title: qsTr("Insert")
-            MenuItem {
-                text: qsTr("&Circle")
-                onTriggered:mindArea.insertShape("circle");
-            }
-            MenuItem {
-                text: qsTr("Rectangle")
-                onTriggered:mindArea.insertShape("rectangle");
+        Button {
+            text: qsTr("Insert")
+            onClicked: subMenuInsert.open();
+            height: parent.height
+            Menu {
+                id: subMenuInsert
+                title: qsTr("Insert")
+                y: parent.height
+                MenuItem {
+                    text: qsTr("&Circle")
+                    onTriggered:mindArea.insertShape("qrc:/CircleShape.qml");
+                }
+                MenuItem {
+                    text: qsTr("Rectangle")
+                    onTriggered:mindArea.insertShape("qrc:/RectangleShape.qml");
+                }
             }
         }
     }
@@ -41,96 +55,42 @@ ApplicationWindow {
         anchors.fill: parent
     }
 
-    Component {
-        id: circleShape
-        Rectangle {
-            width: 50
-            height: width
-            radius: width/2
-            border.color: "blue"
-            color: "white"
-
-            Drag.active: dragArea.drag.active
-            Drag.hotSpot.x: width/2
-            Drag.hotSpot.y: height/2
-
-            MouseArea {
-                id: dragArea
-                anchors.fill: parent
-                drag.target: parent
-                hoverEnabled: true
-                preventStealing: true
-            }
-        }
-    }
-    Component {
-        id: rectangleShape
-        Rectangle {
-            width: 50
-            height: 30
-            radius: 5
-            border.color: "red"
-            color: "white"
-
-            Drag.active: dragArea.drag.active
-            Drag.hotSpot.x: width/2
-            Drag.hotSpot.y: height/2
-
-            MouseArea {
-                id: dragArea
-                anchors.fill: parent
-                drag.target: parent
-                hoverEnabled: true
-                preventStealing: true
-            }
-        }
-    }
-
-    SplitView {
-        anchors.fill: parent
-        orientation: Qt.Horizontal
+    Drawer {
+        edge: Qt.LeftEdge
+        height: parent.height
 
         Column {
             width: 100
-            Layout.minimumWidth: 50
 
             Button {
                 height: 60
                 width: parent.width
-                Rectangle {
+                CircleShape {
                     anchors.centerIn: parent
-                    width: 50
-                    height: width
-                    radius: width/2
-                    border.color: "blue"
-                    color: "white"
+                    radius: (parent.height/2) - 5
+                    mouseAreaEnabled: false
                 }
 
-                onClicked: mindArea.insertShape(circleShape);
+                onClicked: mindArea.insertShape("qrc:/CircleShape.qml");
             }
             Button {
                 height: 60
                 width: parent.width
-                Rectangle {
-                    anchors.centerIn: parent
-                    width: 50
-                    height: 30
-                    radius: 5
-                    border.color: "red"
-                    color: "white"
+                RectangleShape {
+                    anchors.fill: parent
+                    anchors.margins: 5
+                    mouseAreaEnabled: false
                 }
 
-                onClicked: mindArea.insertShape(rectangleShape);
+                onClicked: mindArea.insertShape("qrc:/RectangleShape.qml");
             }
         }
+    }
 
-        MindArea {
-            id: mindArea
-            clip: true
-
-            Layout.minimumWidth: 50
-            Layout.fillWidth: true
-        }
+    MindArea {
+        id: mindArea
+        clip: true
+        anchors.fill: parent
     }
 }
 

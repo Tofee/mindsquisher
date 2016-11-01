@@ -68,8 +68,8 @@ Item {
         }
 
         property Scale contentScaling: Scale {
-            origin.x: flickableViewport.contentItem.width/2
-            origin.y: flickableViewport.contentItem.height/2
+            origin.x: 0
+            origin.y: 0
             xScale: flickableViewport.zoomRatio
             yScale: flickableViewport.zoomRatio
         }
@@ -94,8 +94,16 @@ Item {
         anchors.fill: flickableViewport
         acceptedButtons: Qt.NoButton // let the Flickable viewport handle the swipes
         onWheel: {
+            var currentZoom = flickableViewport.zoomRatio
             flickableViewport.zoomLevel += wheel.angleDelta.y/120;
-            console.log("x : " + wheel.x + "y : " + wheel.y);
+
+            // we want the (x,y) point to be an invariant of the zoom change,
+            // so we have to adapt the flickable offset to achieve this effect
+            var contentX = ((wheel.x + flickableViewport.contentX) / currentZoom) * flickableViewport.zoomRatio - wheel.x
+            var contentY = ((wheel.y + flickableViewport.contentY) / currentZoom) * flickableViewport.zoomRatio - wheel.y
+
+            flickableViewport.contentX = contentX;
+            flickableViewport.contentY = contentY;
         }
     }
 

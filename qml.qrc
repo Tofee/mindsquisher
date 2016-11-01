@@ -4,5 +4,8 @@
         <file>MindArea.qml</file>
         <file>BoundingBox.qml</file>
         <file>FlickableViewport.qml</file>
+        <file>CircleShape.qml</file>
+        <file>RectangleShape.qml</file>
+        <file>BaseShape.qml</file>
     </qresource>
 </RCC>
