@@ -1,0 +1,4 @@
+module MindSquisher
+plugin qmlmindsquisherplugin
+classname MindSquisherPlugin
+

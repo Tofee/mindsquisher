@@ -44,6 +44,38 @@ Item {
                 }"
         }
     }
+    Item {
+        anchors.fill: flickableViewport
+
+        layer.enabled: true
+        layer.effect: ShaderEffect {
+            property size start: Qt.size(flickableViewport.contentX/flickableViewport.width, flickableViewport.contentY/flickableViewport.height)
+            property size gridRatio: Qt.size(flickableViewport.width/gridSize, flickableViewport.height/gridSize);
+            property real zoom: flickableViewport.getZoomRatioFromZoomLevel((flickableViewport.zoomLevel%3) !== 0 ? 0 : 3)
+
+            function positiveModulo(n, m) {
+                return ((n%m) + m) % m;
+            }
+
+            fragmentShader: "
+                varying highp vec2 qt_TexCoord0;
+                uniform lowp float qt_Opacity; // inherited opacity of this item
+                uniform highp vec2 start;
+                uniform highp vec2 gridRatio;
+                uniform highp float zoom;
+                void main() {
+
+                    highp vec2 shiftedTexCoord  = gridRatio*(qt_TexCoord0 + start)/zoom;
+
+                    // Compute anti-aliased world-space grid lines
+                    highp vec2 grid = abs(fract(shiftedTexCoord) - 0.5) / fwidth(shiftedTexCoord);
+                    float line = min(grid.x, grid.y);
+
+                    // Just visualize the grid lines directly
+                    gl_FragColor = vec4(vec3(1.0 - min(line, 1.0)), 0.5);
+                }"
+        }
+    }
 
     // Infinite viewport
     Flickable {
@@ -110,8 +142,6 @@ Item {
     function fitInAll() {
         flickableViewport.contentX = modelBoundingBox.center.x - flickableViewport.width/2;
         flickableViewport.contentY = modelBoundingBox.center.y - flickableViewport.height/2;
-
-        console.log("contentX="+flickableViewport.contentX);
     }
 
     function instantiateComponentAt(component, pos) {

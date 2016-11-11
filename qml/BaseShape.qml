@@ -1,6 +1,7 @@
 import QtQuick 2.0
+import MindSquisher 1.0
 
-Item {
+IdeaBase {
     id: base
 
     property real centerX: x + width/2;

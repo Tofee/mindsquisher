@@ -14,4 +14,4 @@ MindSquisher
  - Core Modeler to store the list of created items, connections, etc
  - Create also an infrastucture for the selection of items and connections
  - Sketch up an ideal UI
- - Zoom in/out where the mouse wheel occurs
+ + Zoom in/out where the mouse wheel occurs

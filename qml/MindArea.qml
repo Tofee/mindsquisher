@@ -39,7 +39,7 @@ Item {
     Text {
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        text: "bbox: " + flickableViewport.modelBoundingBox.stringify() + ", mindAreaFlickable.zoomLevel: " + flickableViewport.zoomLevel
+        text: "bbox: " + flickableViewport.modelBoundingBox.stringify() + ", mindAreaFlickable.zoomRatio: " + flickableViewport.zoomRatio
         color: "white"
     }
     Row {
