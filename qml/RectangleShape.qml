@@ -2,8 +2,8 @@ import QtQuick 2.0
 
 BaseShape {
     id: base
-    width: 50
-    height: 30
+    width: 100
+    height: 60
 
     Rectangle {
         anchors.fill: parent

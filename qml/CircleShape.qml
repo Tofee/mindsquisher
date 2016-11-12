@@ -2,10 +2,13 @@ import QtQuick 2.0
 
 BaseShape {
     id: base
-    property real radius: 20
 
-    width: radius*2
+    readonly property real radius: width/2
+
+    width: 100
     height: width
+    onWidthChanged: height = width; // ensure height and width are always equal
+    onHeightChanged: width = height;
 
     Rectangle {
         id: shapeRect

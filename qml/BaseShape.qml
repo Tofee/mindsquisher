@@ -1,4 +1,6 @@
 import QtQuick 2.0
+import QtQuick.Controls 2.0
+
 import MindSquisher 1.0
 
 IdeaBase {
@@ -7,37 +9,43 @@ IdeaBase {
     property real centerX: x + width/2;
     property real centerY: y + height/2;
 
-    property alias mouseAreaEnabled: dragArea.enabled
+    property SelectionManager selectionMgr;
 
     property bool selected: false;
-    signal clicked();
+    onSelectedChanged: {
+        if(!selected) textArea.focus = false;
+    }
 
-    Drag.active: dragArea.drag.active
-    Drag.hotSpot.x: width/2
-    Drag.hotSpot.y: height/2
+    text: "(click me)"
 
-    MouseArea {
-        id: dragArea
+    TextArea {
+        id: textArea
+
+        z: 2
         anchors.fill: parent
-        drag.target: parent
-        hoverEnabled: true
-        preventStealing: true
+        text: base.text
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
 
-        onClicked: {
-            base.selected = !base.selected;
-            base.clicked();
+        onEditingFinished: deselect();
+
+        MouseArea {     // drag mouse area
+            z: 2
+            anchors.fill: parent
+            enabled: !parent.focus
+            onClicked: {
+                selectionMgr.selectItem(base, mouse.modifiers);
+                if(selectionMgr.itemCount === 1 && selectionMgr.get(0) === base) {
+                    textArea.focus = true;
+                }
+            }
         }
     }
 
-    Rectangle {
-        id: shapeRect
-
+    ResizeArea {
         z: 2
-
         anchors.fill: parent
-        color: "transparent"
-        border.color: "yellow"
-        border.width: 2
+        targetItem: parent
         visible: base.selected
     }
 }

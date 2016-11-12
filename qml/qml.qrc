@@ -7,5 +7,10 @@
         <file>CircleShape.qml</file>
         <file>RectangleShape.qml</file>
         <file>BaseShape.qml</file>
+        <file>ResizeArea.qml</file>
+        <file>ConnectionLine.qml</file>
+        <file>images/emblem-symbolic-link.svg</file>
+        <file>images/window-close.svg</file>
+        <file>SelectionManager.qml</file>
     </qresource>
 </RCC>

@@ -1,28 +1,63 @@
 import QtQuick 2.0
 
 Item {
+    id: root
+
+    signal backgroundClicked();
+
+    property alias contentItem: flickableViewport.contentItem
+
     property BoundingBox modelBoundingBox: BoundingBox {
         topLeft: Qt.point(-200,-200)
         bottomRight: Qt.point(200, 200)
     }
 
-    property real gridSize: 50
+    // grid size
+    property real gridSize: 32
 
-    property alias zoomLevel: flickableViewport.zoomLevel
+    // Zoom management
+    property int zoomLevel: 0
     readonly property alias zoomRatio: flickableViewport.zoomRatio
+    property int subGridZoomLevel: zoomLevel
+    property bool _enableGridZoomAnimation: true
+    onZoomLevelChanged: {
+        // When the zooming animation is finished, this function updates the
+        // grid zoom level to always have a grid/subgrid of an acceptable size
+        var newSubGridZoomLevel = _positiveModulo(zoomLevel,4);
+        _enableGridZoomAnimation = (Math.abs(newSubGridZoomLevel-subGridZoomLevel) === 1);
+        subGridZoomLevel = newSubGridZoomLevel;
+        _enableGridZoomAnimation = true;
+    }
+    function _positiveModulo(n, m) {
+        return ((n%m) + m) % m;
+    }
+
+    // Have a clickable background behind the main contentItem of the flickable
+    Component.onCompleted: mouseAreaBgComp.createObject(flickableViewport, { "z": -1 });
+    Component {
+        id: mouseAreaBgComp
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                root.backgroundClicked();
+            }
+        }
+    }
 
     // Background grid
     Item {
+        id: greyGrid
+        // This is the main grid, appearing in grey behind the main grid
         anchors.fill: flickableViewport
 
         layer.enabled: true
         layer.effect: ShaderEffect {
             property size start: Qt.size(flickableViewport.contentX/flickableViewport.width, flickableViewport.contentY/flickableViewport.height)
             property size gridRatio: Qt.size(flickableViewport.width/gridSize, flickableViewport.height/gridSize);
-            property real zoom: flickableViewport.getZoomRatioFromZoomLevel(positiveModulo(flickableViewport.zoomLevel, 6))
-
-            function positiveModulo(n, m) {
-                return ((n%m) + m) % m;
+            property real zoom: flickableViewport.getZoomRatioFromZoomLevel(subGridZoomLevel);
+            Behavior on zoom {
+                enabled: root._enableGridZoomAnimation
+                NumberAnimation { id: zoomAnimation; duration: 300 }
             }
 
             fragmentShader: "
@@ -33,7 +68,7 @@ Item {
                 uniform highp float zoom;
                 void main() {
 
-                    highp vec2 shiftedTexCoord  = gridRatio*(qt_TexCoord0 + start)/zoom;
+                    highp vec2 shiftedTexCoord  = gridRatio*(qt_TexCoord0 + start)/zoom + 0.5;
 
                     // Compute anti-aliased world-space grid lines
                     highp vec2 grid = abs(fract(shiftedTexCoord) - 0.5) / fwidth(shiftedTexCoord);
@@ -45,16 +80,18 @@ Item {
         }
     }
     Item {
+        id: whiteSuperGrid
         anchors.fill: flickableViewport
+        // This is the super-grid, appearing in white
 
         layer.enabled: true
         layer.effect: ShaderEffect {
             property size start: Qt.size(flickableViewport.contentX/flickableViewport.width, flickableViewport.contentY/flickableViewport.height)
             property size gridRatio: Qt.size(flickableViewport.width/gridSize, flickableViewport.height/gridSize);
-            property real zoom: flickableViewport.getZoomRatioFromZoomLevel((flickableViewport.zoomLevel%3) !== 0 ? 0 : 3)
-
-            function positiveModulo(n, m) {
-                return ((n%m) + m) % m;
+            property real zoom: flickableViewport.getZoomRatioFromZoomLevel(subGridZoomLevel+4)
+            Behavior on zoom {
+                enabled: root._enableGridZoomAnimation
+                NumberAnimation { id: zoomAnimation; duration: 300 }
             }
 
             fragmentShader: "
@@ -92,11 +129,11 @@ Item {
         contentX: modelBoundingBox.center.x - flickableViewport.width/2;
         contentY: modelBoundingBox.center.y - flickableViewport.height/2;
 
-        property int zoomLevel: 0
-        readonly property real zoomRatio: getZoomRatioFromZoomLevel(zoomLevel)
+        property real zoomRatio: getZoomRatioFromZoomLevel(root.zoomLevel)
+        Behavior on zoomRatio { NumberAnimation { duration: 300  } }
 
         function getZoomRatioFromZoomLevel(_zoomLevel) {
-            return Math.exp(_zoomLevel * Math.log(1.25));
+            return Math.exp(_zoomLevel * Math.log(2)/2);
         }
 
         property Scale contentScaling: Scale {
@@ -105,7 +142,9 @@ Item {
             xScale: flickableViewport.zoomRatio
             yScale: flickableViewport.zoomRatio
         }
-        Component.onCompleted: flickableViewport.contentItem.transform = contentScaling;
+        Component.onCompleted: {
+            flickableViewport.contentItem.transform = contentScaling;
+        }
 
         Rectangle {
             id: viewportBoundingBackground
@@ -125,9 +164,10 @@ Item {
     MouseArea {
         anchors.fill: flickableViewport
         acceptedButtons: Qt.NoButton // let the Flickable viewport handle the swipes
+        //scrollGestureEnabled: false
         onWheel: {
             var currentZoom = flickableViewport.zoomRatio
-            flickableViewport.zoomLevel += wheel.angleDelta.y/120;
+            root.zoomLevel += wheel.angleDelta.y/120;
 
             // we want the (x,y) point to be an invariant of the zoom change,
             // so we have to adapt the flickable offset to achieve this effect

@@ -1,5 +1,6 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.2
 
 import MindSquisher 1.0
@@ -10,41 +11,54 @@ ApplicationWindow {
     height: 600
     title: qsTr("Mind Squisher")
 
-    header: Row {
-        height: 30
-        Button {
-            text: qsTr("File")
-            onClicked: subMenuFile.open();
-            height: parent.height
-            Menu {
-                id: subMenuFile
-                title: qsTr("File")
-                y: parent.height
-                MenuItem {
-                    text: qsTr("&Open")
-                }
-                MenuItem {
-                    text: qsTr("Exit")
-                    onTriggered: Qt.quit();
-                }
+    footer: ToolBar {
+        RowLayout {
+            anchors.fill: parent
+            ToolButton {
+                text: "Open"
             }
-        }
-        Button {
-            text: qsTr("Insert")
-            onClicked: subMenuInsert.open();
-            height: parent.height
-            Menu {
-                id: subMenuInsert
-                title: qsTr("Insert")
-                y: parent.height
-                MenuItem {
-                    text: qsTr("&Circle")
-                    onTriggered:mindArea.insertShape("qrc:/CircleShape.qml");
+            ToolButton {
+                width: parent.height
+                text: "\u25A2"
+                indicator: Rectangle {
+                    radius: height/2
+                    anchors.fill: parent
+                    anchors.margins: 5
+                    border.color: "blue"
+                    color: "white"
                 }
-                MenuItem {
-                    text: qsTr("Rectangle")
-                    onTriggered:mindArea.insertShape("qrc:/RectangleShape.qml");
+                onClicked: mindArea.insertShape("qrc:/CircleShape.qml");
+            }
+            ToolButton {
+                width: parent.height*2
+                text: "\u25CB"
+                indicator: Rectangle {
+                    radius: 4
+                    anchors.fill: parent
+                    anchors.margins: 5
+                    border.color: "red"
+                    color: "white"
                 }
+                onClicked: mindArea.insertShape("qrc:/RectangleShape.qml");
+            }
+            ToolButton {
+                width: parent.height*2
+                indicator: Image {
+                    anchors.fill: parent
+                    anchors.margins: 5
+                    source: "qrc:/images/emblem-symbolic-link.svg"
+                }
+                onClicked: mindArea.startConnect();
+            }
+            Item { Layout.fillWidth: true }
+            ToolButton {
+                //text: qsTr("\u2718 Quit")
+                indicator: Image {
+                    anchors.fill: parent
+                    anchors.margins: 5
+                    source: "qrc:/images/window-close.svg"
+                }
+                onClicked: Qt.quit();
             }
         }
     }
@@ -53,38 +67,6 @@ ApplicationWindow {
     Rectangle {
         color: "grey"
         anchors.fill: parent
-    }
-
-    Drawer {
-        edge: Qt.LeftEdge
-        height: parent.height
-
-        Column {
-            width: 100
-
-            Button {
-                height: 60
-                width: parent.width
-                CircleShape {
-                    anchors.centerIn: parent
-                    radius: (parent.height/2) - 5
-                    mouseAreaEnabled: false
-                }
-
-                onClicked: mindArea.insertShape("qrc:/CircleShape.qml");
-            }
-            Button {
-                height: 60
-                width: parent.width
-                RectangleShape {
-                    anchors.fill: parent
-                    anchors.margins: 5
-                    mouseAreaEnabled: false
-                }
-
-                onClicked: mindArea.insertShape("qrc:/RectangleShape.qml");
-            }
-        }
     }
 
     MindArea {
