@@ -3,7 +3,7 @@ TEMPLATE = lib
 QT += qml quick
 CONFIG += qt plugin
 
-DESTDIR = ../build/imports/MindSquisher 
+DESTDIR = $${OUT_PWD}/../build/imports/MindSquisher
 TARGET  = qmlmindsquisherplugin
 
 SOURCES += plugin.cpp \
@@ -15,12 +15,12 @@ HEADERS += plugin.h \
            line.h \
            qobjectlistmodel.h
 
-pluginfiles.files += qmldir 
+OTHER_FILES += qmldir
 
 target.path += $${DESTDIR}
-pluginfiles.path += $${DESTDIR}
 
-INSTALLS += target pluginfiles
+qmldir.files = qmldir
+qmldir.path = $${DESTDIR}
 
-
+INSTALLS += target qmldir
 
